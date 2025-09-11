@@ -1,0 +1,5 @@
+# Carpetas a ignorar
+/.venv
+
+# Archivos a ignorar
+.env
