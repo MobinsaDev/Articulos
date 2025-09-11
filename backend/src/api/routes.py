@@ -1,0 +1,137 @@
+# src/routes/api.py
+from flask import Blueprint, request, jsonify
+from werkzeug.exceptions import BadRequest
+from typing import Optional
+
+from src.utils.media import save_image_bytes
+from src.db.models.forklift import Forklift as ForkliftModel
+from src.db.repository.forklift import ForkliftRepository
+from src.db.models.charger import Charger as ChargerModel
+from src.db.repository.charger import ChargerRepository
+from src.db.models.battery import Battery as BatteryModel
+from src.db.repository.battery import BatteryRepository
+
+api_bp = Blueprint("api", __name__)
+
+def _require_fields(data: dict, fields: list[str]) -> None:
+    missing = [f for f in fields if not str(data.get(f) or "").strip()]
+    if missing:
+        raise BadRequest(f"Faltan campos requeridos: {', '.join(missing)}")
+
+def _to_int(val: Optional[str], name: str) -> int:
+    try:
+        return int(val) if val is not None else None  # type: ignore
+    except Exception:
+        raise BadRequest(f"El campo '{name}' debe ser entero.")
+
+# ---------- Forklifts ----------
+@api_bp.post("/forklifts")
+def create_forklift():
+    """
+    Acepta:
+      - multipart/form-data: fields + file 'image'
+      - application/json: fields (sin archivo)
+    Campos requeridos: serie, model, forklift_type, ubication, battery_id, charger_id
+    """
+    if request.content_type and "multipart/form-data" in request.content_type:
+        form = request.form
+        _require_fields(form, ["serie", "model", "forklift_type", "ubication", "battery_id", "charger_id"])
+
+        image = request.files.get("image")  # opcional
+        image_url = None
+        if image and image.filename:
+            image_url = save_image_bytes(image.read(), "forklift", image.filename)
+
+        forklift = ForkliftModel(
+            id=None,
+            serie=form["serie"].strip(),
+            model=form["model"].strip(),
+            forklift_type=form["forklift_type"].strip(),
+            ubication=form["ubication"].strip(),
+            battery_id=_to_int(form.get("battery_id"), "battery_id"),
+            charger_id=_to_int(form.get("charger_id"), "charger_id"),
+            image_url=image_url
+        )
+    else:
+        data = request.get_json(silent=True) or {}
+        _require_fields(data, ["serie", "model", "forklift_type", "ubication", "battery_id", "charger_id"])
+        forklift = ForkliftModel(
+            id=None,
+            serie=str(data["serie"]).strip(),
+            model=str(data["model"]).strip(),
+            forklift_type=str(data["forklift_type"]).strip(),
+            ubication=str(data["ubication"]).strip(),
+            battery_id=_to_int(str(data["battery_id"]), "battery_id"),
+            charger_id=_to_int(str(data["charger_id"]), "charger_id"),
+            image_url=str(data.get("image_url") or "").strip() or None
+        )
+
+    new_id = ForkliftRepository.create_forklift(forklift)
+    created = ForkliftRepository.show_forklift_by_id(new_id)
+    return jsonify({
+        "ok": True,
+        "data": created.__dict__ if created else {"id": new_id}
+    }), 201
+
+@api_bp.get("/forklifts/<int:forklift_id>")
+def get_forklift(forklift_id: int):
+    fk = ForkliftRepository.show_forklift_by_id(forklift_id)
+    if not fk:
+        return jsonify({"ok": False, "error": "Forklift no encontrado"}), 404
+    return jsonify({"ok": True, "data": fk.__dict__})
+
+@api_bp.get("/forklifts")
+def list_forklifts():
+    try:
+        limit = int(request.args.get("limit", 100))
+        offset = int(request.args.get("offset", 0))
+    except ValueError:
+        raise BadRequest("limit y offset deben ser enteros.")
+    rows = ForkliftRepository.show_all_forklifts(limit=limit, offset=offset)
+    return jsonify({"ok": True, "data": [r.__dict__ for r in rows]})
+
+# ---------- Chargers ----------
+@api_bp.post("/chargers")
+def create_charger():
+    if request.content_type and "multipart/form-data" in request.content_type:
+        form = request.form
+        _require_fields(form, ["model", "serie"])
+        image = request.files.get("image")
+        image_url = None
+        if image and image.filename:
+            image_url = save_image_bytes(image.read(), "chargers", image.filename)
+        charger = ChargerModel(id=None, model=form["model"].strip(), serie=form["serie"].strip(), image_url=image_url)
+    else:
+        data = request.get_json(silent=True) or {}
+        _require_fields(data, ["model", "serie"])
+        charger = ChargerModel(
+            id=None,
+            model=str(data["model"]).strip(),
+            serie=str(data["serie"]).strip(),
+            image_url=str(data.get("image_url") or "").strip() or None
+        )
+    new_id = ChargerRepository.create_new_charger(charger)
+    return jsonify({"ok": True, "data": {"id": new_id}}), 201
+
+# ---------- Batteries ----------
+@api_bp.post("/batteries")
+def create_battery():
+    if request.content_type and "multipart/form-data" in request.content_type:
+        form = request.form
+        _require_fields(form, ["model", "serie"])
+        image = request.files.get("image")
+        image_url = None
+        if image and image.filename:
+            image_url = save_image_bytes(image.read(), "batteries", image.filename)
+        battery = BatteryModel(id=None, model=form["model"].strip(), serie=form["serie"].strip(), image_url=image_url)
+    else:
+        data = request.get_json(silent=True) or {}
+        _require_fields(data, ["model", "serie"])
+        battery = BatteryModel(
+            id=None,
+            model=str(data["model"]).strip(),
+            serie=str(data["serie"]).strip(),
+            image_url=str(data.get("image_url") or "").strip() or None
+        )
+    new_id = BatteryRepository.create_new_battery(battery)
+    return jsonify({"ok": True, "data": {"id": new_id}}), 201
