@@ -1,4 +1,4 @@
-# src/routes/auth.py
+# backend\src\routes\auth.py
 from flask import Blueprint
 from src.service import auth as auth_service
 

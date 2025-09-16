@@ -1,5 +1,6 @@
 # Carpetas a ignorar
 /.venv
+/static/uploads
 
 # Archivos a ignorar
 .env

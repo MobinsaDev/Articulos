@@ -1,4 +1,4 @@
-#src/db/models/user.py
+#backend\src\db\models\user.py
 from src.db.connectiondb import db_connection
 from dataclasses import dataclass
 from typing import Optional
@@ -13,6 +13,7 @@ class User:
     secondname: str
     email: str
     password_hash: str
+    # role: str
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     

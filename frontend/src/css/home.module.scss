@@ -1,0 +1,57 @@
+/* src/css/home.module.scss */
+$xl: 768px;
+
+.homeMain {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+
+    @media (min-width: 1024px) {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+.content {
+    background: rgba(255, 255, 255, .02);
+    border: 1px solid hsl(0 0% 100% / .08);
+    border-radius: 16px;
+    padding: 14px;
+    color: #0E1A27;
+    flex: 1 1 auto;
+    min-width: 0;
+
+    @media (min-width: $xl) {
+        padding: 18px;
+    }
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+
+    .title {
+        font-weight: 600;
+    }
+
+    .right {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+    }
+}
+
+.h1 {
+    font-size: clamp(1.2rem, 1rem + 0.8vw, 1.6rem);
+    margin-bottom: 6px;
+}
+
+.p {
+    color: #0E1A27;
+}

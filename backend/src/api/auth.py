@@ -1,4 +1,4 @@
-# src/routes/auth_middleware.py
+# backend\src\api\auth.py
 from functools import wraps
 from flask import request, jsonify, g
 from src.service.jwt_service import decode_token

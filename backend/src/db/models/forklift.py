@@ -1,3 +1,4 @@
+#backend\src\db\models\forklift.py
 from src.db.connectiondb import db_connection
 from dataclasses import dataclass
 from typing import Optional

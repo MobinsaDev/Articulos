@@ -1,15 +1,19 @@
-#src/service/jwt_service.py
+#backend\src\service\jwt_service.py
 import os, time, jwt
-from typing import Any, Dict
+from typing import Dict, Any
 
-JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")
-JWT_ALG = "HS256"
-JWT_TTL = 60 * 60 * 24  # 1 día
+SECRET = os.getenv("JWT_SECRET", "dev-secret")
+ALGO = "HS256"
 
-def create_access_token(payload: Dict[str, Any], ttl: int = JWT_TTL) -> str:
+def create_token(payload: Dict[str, Any], ttl_seconds: int) -> str:
     now = int(time.time())
-    body = {"iat": now, "exp": now + ttl, **payload}
-    return jwt.encode(body, JWT_SECRET, algorithm=JWT_ALG)
+    body = {
+        "iat": now,
+        "nbf": now,
+        "exp": now + ttl_seconds,
+        **payload,
+    }
+    return jwt.encode(body, SECRET, algorithm=ALGO)
 
 def decode_token(token: str) -> Dict[str, Any]:
-    return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
+    return jwt.decode(token, SECRET, algorithms=[ALGO])
