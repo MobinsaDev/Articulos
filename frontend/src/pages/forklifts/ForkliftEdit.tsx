@@ -32,20 +32,19 @@ export default function ForkliftEdit() {
   useEffect(() => {
     (async () => {
       try {
-        const [{ data }, bs, cs] = await Promise.all([
+        const [fkBody, bs, cs] = await Promise.all([
           getForklift(Number(id)),
           listBatteries({ limit: 200, offset: 0 }),
           listChargers({ limit: 200, offset: 0 }),
         ])
+        const fk = fkBody.data;
 
-        const fk = data.data
         setSerie(fk.serie)
         setModel(fk.model)
         setForkliftType(fk.forklift_type)
         setUbication(fk.ubication)
         setBatteryId(fk.battery_id)
         setChargerId(fk.charger_id)
-        setCurrentImageUrl(fk.image_url ?? null)
 
         setBatteries(bs ?? [])
         setChargers(cs ?? [])

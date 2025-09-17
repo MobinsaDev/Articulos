@@ -6,6 +6,14 @@ import os
 
 load_dotenv()
 
+STATIC_PATH = "static/uploads"
+
+def init_folders():
+    if not os.path.exists(STATIC_PATH):
+        os.makedirs(f"{STATIC_PATH}/batteries", exist_ok=True)
+        os.makedirs(f"{STATIC_PATH}/chargers", exist_ok=True)
+        os.makedirs(f"{STATIC_PATH}/forklifts", exist_ok=True)
+
 def init_db():
     try:
         db_name = os.getenv("DB_NAME", "mobinsaexternos")

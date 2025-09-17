@@ -45,7 +45,7 @@ export async function updateCharger(id: number, p: {
   if (p.model !== undefined) fd.set('model', p.model)
   if (p.serie !== undefined) fd.set('serie', p.serie)
   if (p.imageFile) fd.set('image', p.imageFile, p.imageFile.name)
-  return api.patch<{ ok: true; data: Charger }>(`/api/chargers/${id}`, fd)
+  return api.put<{ ok: true; data: Charger }>(`/api/chargers/${id}`, fd)
 }
 
 export async function deleteCharger(id: number) {

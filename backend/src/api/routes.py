@@ -27,12 +27,6 @@ def _to_int(val: Optional[str], name: str) -> int:
 # ---------- Montacargas ----------
 @api_bp.post("/forklifts")
 def create_forklift():
-    """
-    Acepta:
-      - multipart/form-data: fields + file 'image'
-      - application/json: fields (sin archivo)
-    Campos requeridos: serie, model, forklift_type, ubication, battery_id, charger_id
-    """
     if request.content_type and "multipart/form-data" in request.content_type:
         form = request.form
         _require_fields(form, ["serie", "model", "forklift_type", "ubication", "battery_id", "charger_id"])
@@ -75,7 +69,7 @@ def create_forklift():
 
 @api_bp.get("/forklifts/<int:forklift_id>")
 def get_forklift(forklift_id: int):
-    fk = ForkliftRepository.show_forklift_by_id(forklift_id)
+    fk = ForkliftRepository.get_by_id(forklift_id)
     if not fk:
         return jsonify({"ok": False, "error": "Forklift no encontrado"}), 404
     return jsonify({"ok": True, "data": fk.__dict__})
@@ -89,6 +83,59 @@ def list_forklifts():
         raise BadRequest("limit y offset deben ser enteros.")
     rows = ForkliftRepository.show_all_forklifts(limit=limit, offset=offset)
     return jsonify({"ok": True, "data": [r.__dict__ for r in rows]})
+
+def _to_int_or_none(v):
+    if v is None or str(v).strip() == "":
+        return None
+    try:
+        return int(v)
+    except Exception:
+        raise BadRequest("battery_id/charger_id deben ser enteros.")
+
+@api_bp.put("/forklifts/<int:forklift_id>")
+@api_bp.patch("/forklifts/<int:forklift_id>")
+def update_forklift(forklift_id: int):
+    existing = ForkliftRepository.get_by_id(forklift_id)
+    if not existing:
+        raise NotFound("Montacargas no encontrado")
+
+    payload: dict = {}
+
+    if request.content_type and "multipart/form-data" in request.content_type:
+        form = request.form
+
+        if "serie" in form:         payload["serie"] = form["serie"].strip()
+        if "model" in form:         payload["model"] = form["model"].strip()
+        if "forklift_type" in form: payload["forklift_type"] = form["forklift_type"].strip()
+        if "ubication" in form:     payload["ubication"] = form["ubication"].strip()
+
+        if "battery_id" in form:    payload["battery_id"]  = _to_int_or_none(form.get("battery_id"))
+        if "charger_id" in form:    payload["charger_id"]  = _to_int_or_none(form.get("charger_id"))
+
+        new_image = request.files.get("image")  # opcional
+        if new_image and new_image.filename:
+            new_url = save_image_bytes(new_image.read(), "forklifts", new_image.filename)
+            payload["image_url"] = new_url
+            # borrar la anterior si cambió
+            if existing.image_url and existing.image_url != new_url:
+                delete_image_by_url(existing.image_url)
+
+    else:
+        data = request.get_json(silent=True) or {}
+        if "serie" in data:         payload["serie"] = str(data["serie"]).strip()
+        if "model" in data:         payload["model"] = str(data["model"]).strip()
+        if "forklift_type" in data: payload["forklift_type"] = str(data["forklift_type"]).strip()
+        if "ubication" in data:     payload["ubication"] = str(data["ubication"]).strip()
+
+        if "battery_id" in data:    payload["battery_id"] = _to_int_or_none(data.get("battery_id"))
+        if "charger_id" in data:    payload["charger_id"] = _to_int_or_none(data.get("charger_id"))
+
+        if "image_url" in data:
+            payload["image_url"] = str(data["image_url"]).strip() or None
+
+    ok = ForkliftRepository.update(forklift_id, payload)
+    updated = ForkliftRepository.get_by_id(forklift_id) if ok else existing
+    return jsonify({"ok": True, "data": updated.__dict__}), 200
 
 @api_bp.delete("/forklifts/<int:forklift_id>")
 def delete_forklift(forklift_id: int):

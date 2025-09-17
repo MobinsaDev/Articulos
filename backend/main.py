@@ -3,15 +3,16 @@ from flask import Flask
 from dotenv import load_dotenv
 import os
 
-from src.db import init_db
+from src.db import init_db, init_folders
 from src.routes.auth import auth_bp
 from src.routes.users import users_bp
-from src.api.routes import api_bp  # tu blueprint de forklifts/chargers/batteries
+from src.api.routes import api_bp
 
 load_dotenv()
 
 def create_app():
     init_db()
+    init_folders()
 
     app = Flask(__name__, static_folder="static")
     app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_CONTENT_LENGTH", 16 * 1024 * 1024))

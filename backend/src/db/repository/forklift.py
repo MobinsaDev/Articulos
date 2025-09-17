@@ -73,7 +73,42 @@ class ForkliftRepository:
         finally:
             cur.close()
             conn.close()
-            
+
+    @staticmethod
+    def update(forklift_id: int, payload: dict) -> bool:
+        if not payload:
+            return True  
+        fields = []
+        values = []
+
+        for key in ["serie", "model", "forklift_type", "ubication",
+                    "battery_id", "charger_id", "image_url"]:
+            if key in payload:
+                fields.append(f"{key}=%s")
+                values.append(payload[key])
+
+        if not fields:
+            return True
+
+        conn = db_connection()
+        cur = conn.cursor()
+        try:
+            sql = (
+                f"UPDATE {ForkliftRepository.TABLE} "
+                f"SET {', '.join(fields)}, updated_at=NOW() "
+                f"WHERE id=%s"
+            )
+            values.append(forklift_id)
+            cur.execute(sql, tuple(values))
+            conn.commit()
+            return cur.rowcount > 0
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cur.close()
+            conn.close()
+
     @staticmethod
     def delete(forklift_id: int) -> bool:
         conn = db_connection()
