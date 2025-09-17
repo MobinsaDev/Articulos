@@ -12,9 +12,9 @@ class UserRepository:
         try:
             cur = conn.cursor()
             cur.execute(
-                f"INSERT INTO `{UserRepository.TABLE}` (name, secondname, email, password_hash) "
-                "VALUES (%s, %s, %s, %s)",
-                (u.name, u.secondname, u.email, u.password_hash)
+                f"INSERT INTO `{UserRepository.TABLE}` (name, secondname, email, password_hash, role) "
+                "VALUES (%s, %s, %s, %s, %s)",
+                (u.name, u.secondname, u.email, u.password_hash, u.role)
             )
             conn.commit()
             return cur.lastrowid
@@ -31,7 +31,7 @@ class UserRepository:
         cur = conn.cursor(dictionary=True)
         try:
             cur.execute(
-                f"SELECT id, name, secondname, email, password_hash, created_at, updated_at "
+                f"SELECT id, name, secondname, email, password_hash, role, created_at, updated_at "
                 f"FROM `{UserRepository.TABLE}` WHERE id=%s",
                 (user_id,)
             )
@@ -49,7 +49,7 @@ class UserRepository:
         cur = conn.cursor(dictionary=True)
         try:
             cur.execute(
-                f"SELECT id, name, secondname, email, password_hash, created_at, updated_at "
+                f"SELECT id, name, secondname, email, password_hash, role, created_at, updated_at "
                 f"FROM `{UserRepository.TABLE}` WHERE email=%s",
                 (email,)
             )
@@ -67,7 +67,7 @@ class UserRepository:
         cur = conn.cursor(dictionary=True)
         try:
             cur.execute(
-                f"SELECT id, name, secondname, email, password_hash, created_at, updated_at "
+                f"SELECT id, name, secondname, email, password_hash, role, created_at, updated_at "
                 f"FROM `{UserRepository.TABLE}` ORDER BY id LIMIT %s OFFSET %s",
                 (limit, offset)
             )
@@ -79,7 +79,6 @@ class UserRepository:
 
     @staticmethod
     def update(u: User) -> bool:
-        """Actualiza name, secondname, email, password_hash por id."""
         if u.id is None:
             raise ValueError("u.id es requerido para update")
         conn = db_connection()
@@ -87,8 +86,8 @@ class UserRepository:
             cur = conn.cursor()
             cur.execute(
                 f"UPDATE `{UserRepository.TABLE}` "
-                f"SET name=%s, secondname=%s, email=%s, password_hash=%s WHERE id=%s",
-                (u.name, u.secondname, u.email, u.password_hash, u.id)
+                f"SET name=%s, secondname=%s, email=%s, password_hash=%s, role=%s WHERE id=%s",
+                (u.name, u.secondname, u.email, u.password_hash, u.role, u.id)
             )
             conn.commit()
             return cur.rowcount > 0

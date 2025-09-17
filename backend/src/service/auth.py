@@ -55,6 +55,17 @@ def login():
         return jsonify({"error":"Credenciales inválidas"}), 401
     return _issue_tokens_response({"id": user.id, "name": user.name, "email": user.email}), 200
 
+def roles_required(*allowed_roles: str):
+    def deco(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            user = getattr(g, "current_user", None)
+            if not user or user.role not in allowed_roles:
+                return jsonify({"error": "Prohibido"}), 403
+            return fn(*args, **kwargs)
+        return wrapper
+    return deco
+    
 def refresh():
     rt = request.cookies.get(REFRESH_COOKIE)
     if not rt:
@@ -96,4 +107,4 @@ def me():
     
     if not user:
         return jsonify({"user": None}), 200
-    return jsonify({"user": {"id": user.id, "name": user.name, "email": user.email}}), 200
+    return jsonify({"user": {"id": user.id, "name": user.name, "email": user.email, "role": user.role}}), 200

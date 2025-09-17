@@ -1,4 +1,4 @@
-#backend\src\db\models\battery.py
+#backend\src\db\models\attachments.py
 from src.db.connectiondb import db_connection
 from dataclasses import dataclass
 from typing import Optional
@@ -15,4 +15,3 @@ class Attachment:
     image_url: Optional[str] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    

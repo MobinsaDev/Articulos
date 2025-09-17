@@ -2,15 +2,15 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authLogin, authLogout, authMe, authRegister } from '../api/auth';
 import type { MeResponse } from '../types/types';
 
-type AuthUser = { id: number; name: string; email: string } | null;
+type AuthUser = { id: number; name: string; email: string; role: string } | null;
 
 interface AuthCtx {
-    user: AuthUser
-    loading: boolean
-    login: (p: { email: string; password: string }) => Promise<void>
-    register: (p: { name: string; secondname: string; email: string; password: string }) => Promise<void>
-    logout: () => Promise<void>
-    refresh: () => Promise<void>
+    user: AuthUser;
+    loading: boolean;
+    login: (p: { email: string; password: string }) => Promise<void>;
+    register: (p: { name: string; secondname: string; email: string; password: string }) => Promise<void>;
+    logout: () => Promise<void>;
+    refresh: () => Promise<void>;
 }
 
 const Ctx = createContext<AuthCtx | null>(null)

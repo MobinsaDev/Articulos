@@ -22,3 +22,14 @@ def auth_required(fn):
             return jsonify({"error": "No autorizado"}), 401
         return fn(*args, **kwargs)
     return wrapper
+    
+def roles_required(*allowed_roles: str):
+    def deco(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            user = getattr(g, "current_user", None)
+            if not user or user.role not in allowed_roles:
+                return jsonify({"error": "Prohibido"}), 403
+            return fn(*args, **kwargs)
+        return wrapper
+    return deco

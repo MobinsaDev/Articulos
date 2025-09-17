@@ -1,14 +1,18 @@
+export type Role = 'admin' | 'manager' | 'tech';
+
 export interface User {
   id: number
   name: string
   secondname: string
   email: string
+  role: Role
   created_at?: string
   updated_at?: string
 }
 
 export interface MeResponse {
-  user: { id: number; name: string; email: string } | null
+  ok: true;
+  user: { id: number; name: string; email: string; role: string } | null
 }
 
 export interface ApiOk<T> { ok: true; data: T }

@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { listForklifts, deleteForklift, type Forklift } from '../../api/forklift'
+import { useAuth } from '../../context/AuthContext';
 
 export default function ForkliftList() {
   const [rows, setRows] = useState<Forklift[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { user } = useAuth();
 
+  console.log(user)
   const load = async () => {
     setLoading(true); setError(null)
     try {
@@ -66,8 +69,12 @@ export default function ForkliftList() {
                   {fk.image_url ? <img src={toImgUrl(fk.image_url)} alt="" style={{ width: 56, height: 40, objectFit: 'cover' }} /> : '—'}
                 </td>
                 <td className="p-2 border">
-                  <Link to={`/forklifts/${fk.id}`} className="underline">Editar</Link>
-                  <button onClick={() => onDelete(fk.id)} className="ml-2 text-red-600">Eliminar</button>
+                  {(user?.role === 'admin' || user?.role === 'manager') && (
+                    <Link to={`/forklifts/${fk.id}`} className="underline">Editar</Link>
+                  )}
+                  {(user?.role === 'admin') && (
+                    <button onClick={() => onDelete(fk.id)} className="ml-2 text-red-600">Eliminar</button>
+                  )}
                 </td>
               </tr>
             ))}

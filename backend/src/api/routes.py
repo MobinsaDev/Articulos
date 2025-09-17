@@ -10,6 +10,8 @@ from src.db.models.charger import Charger as ChargerModel
 from src.db.repository.charger import ChargerRepository
 from src.db.models.battery import Battery as BatteryModel
 from src.db.repository.battery import BatteryRepository
+from src.api.auth import auth_required, roles_required
+
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -26,6 +28,8 @@ def _to_int(val: Optional[str], name: str) -> int:
 
 # ---------- Montacargas ----------
 @api_bp.post("/forklifts")
+@auth_required
+@roles_required("admin","manager","tech")
 def create_forklift():
     if request.content_type and "multipart/form-data" in request.content_type:
         form = request.form
@@ -68,6 +72,8 @@ def create_forklift():
     }), 201
 
 @api_bp.get("/forklifts/<int:forklift_id>")
+@auth_required
+@roles_required("admin","manager","tech")
 def get_forklift(forklift_id: int):
     fk = ForkliftRepository.get_by_id(forklift_id)
     if not fk:
@@ -75,6 +81,8 @@ def get_forklift(forklift_id: int):
     return jsonify({"ok": True, "data": fk.__dict__})
 
 @api_bp.get("/forklifts")
+@auth_required
+@roles_required("admin","manager","tech")
 def list_forklifts():
     try:
         limit = int(request.args.get("limit", 100))
@@ -94,6 +102,8 @@ def _to_int_or_none(v):
 
 @api_bp.put("/forklifts/<int:forklift_id>")
 @api_bp.patch("/forklifts/<int:forklift_id>")
+@auth_required
+@roles_required("admin","manager")
 def update_forklift(forklift_id: int):
     existing = ForkliftRepository.get_by_id(forklift_id)
     if not existing:
@@ -138,6 +148,8 @@ def update_forklift(forklift_id: int):
     return jsonify({"ok": True, "data": updated.__dict__}), 200
 
 @api_bp.delete("/forklifts/<int:forklift_id>")
+@auth_required
+@roles_required("admin")
 def delete_forklift(forklift_id: int):
     existing = ForkliftRepository.get_by_id(forklift_id)
     if not existing:
@@ -149,6 +161,8 @@ def delete_forklift(forklift_id: int):
 
 # ---------- Cargadores ----------
 @api_bp.post("/chargers")
+@auth_required
+@roles_required("admin","manager","tech")
 def create_charger():
     if request.content_type and "multipart/form-data" in request.content_type:
         form = request.form
@@ -171,6 +185,8 @@ def create_charger():
     return jsonify({"ok": True, "data": {"id": new_id}}), 201
 
 @api_bp.get("/chargers/<int:charger_id>")
+@auth_required
+@roles_required("admin","manager","tech")
 def get_charger(charger_id: int):
     b = ChargerRepository.get_by_id(charger_id)
     if not b:
@@ -178,6 +194,8 @@ def get_charger(charger_id: int):
     return jsonify({"ok": True, "data": b.__dict__}), 200
 
 @api_bp.get("/chargers")
+@auth_required
+@roles_required("admin","manager","tech")
 def list_chargers():
     try:
         limit = int(request.args.get("limit", 100))
@@ -189,6 +207,8 @@ def list_chargers():
 
 @api_bp.put("/chargers/<int:charger_id>")
 @api_bp.patch("/chargers/<int:charger_id>")
+@auth_required
+@roles_required("admin","manager")
 def update_charger(charger_id: int):
     existing = ChargerRepository.get_by_id(charger_id)
     if not existing:
@@ -218,6 +238,8 @@ def update_charger(charger_id: int):
     return jsonify({"ok": True, "data": updated.__dict__}), 200
 
 @api_bp.delete("/chargers/<int:charger_id>")
+@auth_required
+@roles_required("admin")
 def delete_charger(charger_id: int):
     existing = ChargerRepository.get_by_id(charger_id)
     if not existing:
@@ -230,6 +252,8 @@ def delete_charger(charger_id: int):
 
 # ---------- Baterias ----------
 @api_bp.post("/batteries")
+@auth_required
+@roles_required("admin","manager","tech")
 def create_battery():
     if request.content_type and "multipart/form-data" in request.content_type:
         form = request.form
@@ -252,6 +276,8 @@ def create_battery():
     return jsonify({"ok": True, "data": {"id":new_id}}), 201
 
 @api_bp.get("/batteries/<int:battery_id>")
+@auth_required
+@roles_required("admin","manager","tech")
 def get_battery(battery_id: int):
     b = BatteryRepository.get_by_id(battery_id)
     if not b:
@@ -259,6 +285,8 @@ def get_battery(battery_id: int):
     return jsonify({"ok": True, "data": b.__dict__}), 200
 
 @api_bp.get("/batteries")
+@auth_required
+@roles_required("admin","manager","tech")
 def list_batteries():
     try:
         limit = int(request.args.get("limit", 100))
@@ -270,6 +298,8 @@ def list_batteries():
 
 @api_bp.put("/batteries/<int:battery_id>")
 @api_bp.patch("/batteries/<int:battery_id>")
+@auth_required
+@roles_required("admin","manager")
 def update_battery(battery_id: int):
     existing = BatteryRepository.get_by_id(battery_id)
     if not existing:
@@ -298,6 +328,8 @@ def update_battery(battery_id: int):
     return jsonify({"ok": True, "data": updated.__dict__}), 200
 
 @api_bp.delete("/batteries/<int:battery_id>")
+@auth_required
+@roles_required("admin")
 def delete_battery(battery_id: int):
     existing = BatteryRepository.get_by_id(battery_id)
     if not existing:
