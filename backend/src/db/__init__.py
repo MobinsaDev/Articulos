@@ -34,22 +34,24 @@ def init_db():
                 `name` VARCHAR(255) UNIQUE NOT NULL,
                 `secondname` VARCHAR(255) NOT NULL,
                 `email` VARCHAR(255) UNIQUE NOT NULL,
+                `role` VARCHAR(255) UNIQUE NOT NULL,
                 `password_hash` VARCHAR(255) NOT NULL,
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         """)
         
-        admin_name = "admin"
+        admin_name = "Isaí"
+        admin_role = "admin"
         admin_email = "desarrollo@mobinsa.com"
         admin_pwd = generate_password_hash("SiS2511")
         
         cur.execute(
             """
-            INSERT IGNORE INTO `users` (name, email, password_hash)
-            VALUES (%s, %s, %s)
+            INSERT IGNORE INTO `users` (name, email, role, password_hash)
+            VALUES (%s, %s, %s, %s)
             """,
-        (admin_name,admin_email,admin_pwd)) 
+        (admin_name,admin_email,admin_role,admin_pwd)) 
         
         cur.execute("""
             CREATE TABLE IF NOT EXISTS `forklift_register` (

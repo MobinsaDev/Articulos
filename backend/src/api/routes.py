@@ -10,8 +10,10 @@ from src.db.models.charger import Charger as ChargerModel
 from src.db.repository.charger import ChargerRepository
 from src.db.models.battery import Battery as BatteryModel
 from src.db.repository.battery import BatteryRepository
-from src.api.auth import auth_required, roles_required
+from src.db.models.user import User as UserModel
+from src.db.repository.user import UserRepository
 
+from src.api.auth import auth_required, roles_required
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -337,4 +339,101 @@ def delete_battery(battery_id: int):
     if existing.image_url:
         delete_image_by_url(existing.image_url)
     ok = BatteryRepository.delete(battery_id)
+    return jsonify({"ok": ok}), 200
+
+# ---------- Usarios ----------
+@api_bp.post("/users")
+@roles_required("admin")
+def create_user():
+    if request.content_type and "multipart/form-data" in request.content_type:
+        form = request.form
+        _require_fields(form, ["name", "email", "password", "role"])
+        u = UserModel(
+            id=None,
+            name=form["name"].strip(),
+            email=form["email"].strip(),
+            password=form["password"],
+            role=form["role"].strip()
+        )
+    else:
+        data = request.get_json(silent=True) or {}
+        _require_fields(data, ["name", "email", "password", "role"])
+        u = UserModel(
+            id=None,
+            name=str(data["name"]).strip(),
+            email=str(data["email"]).strip(),
+            password=str(data["password"]),
+            role=str(data["role"]).strip()
+        )
+    new_id = UserRepository.create(u)
+    return jsonify({"ok": True, "data": {"id": new_id}}), 201
+
+@api_bp.get("/users/<int:user_id>")
+@roles_required("admin")
+def get_user(user_id: int):
+    u = UserRepository.get_by_id(user_id)
+    if not u:
+        raise NotFound("Usuario no encontrado")
+    # Evitar exponer password hash si existe
+    d = u.__dict__.copy()
+    d.pop("password", None)
+    d.pop("password_hash", None)
+    return jsonify({"ok": True, "data": d}), 200
+
+@api_bp.get("/users")
+@roles_required("admin")
+def list_users():
+    try:
+        limit = int(request.args.get("limit", 100))
+        offset = int(request.args.get("offset", 0))
+    except ValueError:
+        raise BadRequest("limit y offset deben ser enteros.")
+    rows = UserRepository.list_all(limit=limit, offset=offset)
+    data = []
+    for r in rows:
+        d = r.__dict__.copy()
+        d.pop("password", None)
+        d.pop("password_hash", None)
+        data.append(d)
+        print(d)
+    return jsonify({"ok": True, "data": data}), 200
+
+@api_bp.put("/users/<int:user_id>")
+@api_bp.patch("/users/<int:user_id>")
+@roles_required("admin")
+def update_user(user_id: int):
+    existing = UserRepository.get_by_id(user_id)
+    if not existing:
+        raise NotFound("Usuario no encontrado")
+
+    payload = {}
+    if request.content_type and "multipart/form-data" in request.content_type:
+        form = request.form
+        if "name" in form: payload["name"] = form["name"].strip()
+        if "email" in form: payload["email"] = form["email"].strip()
+        if "role" in form: payload["role"] = form["role"].strip()
+        if "password" in form and form["password"]:
+            payload["password"] = form["password"]
+    else:
+        data = request.get_json(silent=True) or {}
+        if "name" in data: payload["name"] = str(data["name"]).strip()
+        if "email" in data: payload["email"] = str(data["email"]).strip()
+        if "role" in data: payload["role"] = str(data["role"]).strip()
+        if "password" in data and data["password"]:
+            payload["password"] = str(data["password"])
+
+    ok = UserRepository.update(user_id, payload)
+    u = UserRepository.get_by_id(user_id) if ok else existing
+    d = u.__dict__.copy()
+    d.pop("password", None)
+    d.pop("password_hash", None)
+    return jsonify({"ok": True, "data": d}), 200
+
+@api_bp.delete("/users/<int:user_id>")
+@roles_required("admin")
+def delete_user(user_id: int):
+    existing = UserRepository.get_by_id(user_id)
+    if not existing:
+        raise NotFound("Usuario no encontrado")
+    ok = UserRepository.delete(user_id)
     return jsonify({"ok": ok}), 200

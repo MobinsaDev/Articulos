@@ -55,6 +55,7 @@ def update_user(user_id: int):
     data = request.get_json(silent=True) or {}
     name = str(data.get("name", existing.name)).strip()
     secondname = str(data.get("secondname", existing.secondname)).strip()
+    role = str(data.get("role",existing.role)).strip()
     email = str(data.get("email", existing.email)).strip()
     pwd = data.get("password")
 
@@ -63,6 +64,7 @@ def update_user(user_id: int):
         name=name,
         secondname=secondname,
         email=email,
+        role=role,
         password_hash=existing.password_hash,
         created_at=existing.created_at,
         updated_at=existing.updated_at,

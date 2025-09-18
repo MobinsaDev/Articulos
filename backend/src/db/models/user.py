@@ -13,7 +13,7 @@ class User:
     secondname: str
     email: str
     password_hash: str
-    role: str = "tech" #Roles: Admin: Acceso compelto, Ger (gerentes/supervisores): Acceso a crear registros, actualizar registros y ver registros. No puede eliminar, no puede crear nuevos usuarios; Tec (técnicos): Sólo pueden crear registros y ver registros
+    role: str #Roles: Admin: Acceso compelto, Manager (gerentes/supervisores): Acceso a crear registros, actualizar registros y ver registros. No puede eliminar, no puede crear nuevos usuarios; Tec (técnicos): Sólo pueden crear registros y ver registros
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     
