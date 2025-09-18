@@ -4,8 +4,8 @@ import { NavLink } from "react-router-dom";
 import s from "../css/sidebar.module.scss";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
 export default function Sidebar() {
+    const { user } = useAuth();
     const [expanded, setExpanded] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -76,14 +76,16 @@ export default function Sidebar() {
                         <span className={s.icon}>🔌</span>
                         <span className={s.label}>Cargadores</span>
                     </NavLink>
-                    <NavLink to="/Aditamets" className={({ isActive }) => isActive ? s.active : ""}>
+                    <NavLink to="/aditamets" className={({ isActive }) => isActive ? s.active : ""}>
                         <span className={s.icon}>🔩</span>
                         <span className={s.label}>Aditamentos</span>
                     </NavLink>
-                    <NavLink to="/users" className={({ isActive }) => (isActive ? s.active : "")}>
-                        <span className={s.icon}>👤</span>
-                        <span className={s.label}>Usuarios</span>
-                    </NavLink>
+                    {user?.role === 'admin' && (
+                        <NavLink to="/users" className={({ isActive }) => (isActive ? s.active : "")}>
+                            <span className={s.icon}>👤</span>
+                            <span className={s.label}>Usuarios</span>
+                        </NavLink>
+                    )}
                     <button onClick={onLogout} className={s.logout}>Salir</button>
 
                 </nav>

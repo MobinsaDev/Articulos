@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { createForklift } from '../../api/forklift'
 import { listBatteries, createBattery, type Battery } from '../../api/batteries'
 import { listChargers, createCharger, type Charger } from '../../api/charger'
+import style from '../../css/forklifts.module.scss'
 
 export default function ForkliftForm() {
     const nav = useNavigate()
@@ -31,6 +32,14 @@ export default function ForkliftForm() {
 
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState<string | null>(null)
+
+    const FORKLIFT_TYPES = ["Combustión", "Eléctrico"] as const;
+
+    const UBICATIONS = [
+        "Mobinsa: Av. Industrias",
+        "Mobinsa: Juárez",
+        "Mobinsa: Cuauhtémoc",
+    ] as const;
 
     useEffect(() => {
         (async () => {
@@ -87,29 +96,50 @@ export default function ForkliftForm() {
     }
 
     return (
-        <form onSubmit={onSubmit} className="space-y-6 max-w-3xl">
-            <h2 className="text-xl font-semibold">Nuevo Montacargas</h2>
-            {error && <div className="text-red-600">{error}</div>}
+        <form onSubmit={onSubmit} className={style.formForklift}>
+            <h2>Nuevo Montacargas</h2>
+            {error && <div>{error}</div>}
 
-            <fieldset className="border p-4 rounded">
-                <legend className="font-bold">Montacargas</legend>
-                <label className="block">
+            <fieldset>
+                <legend>Montacargas</legend>
+                <label>
                     <span>Serie</span>
-                    <input className="input" value={serie} onChange={e => setSerie(e.target.value)} required />
+                    <input value={serie} onChange={e => setSerie(e.target.value)} required />
                 </label>
-                <label className="block">
+                <label>
                     <span>Modelo</span>
-                    <input className="input" value={model} onChange={e => setModel(e.target.value)} required />
+                    <input value={model} onChange={e => setModel(e.target.value)} required />
                 </label>
                 <label className="block">
                     <span>Tipo</span>
-                    <input className="input" value={forkliftType} onChange={e => setForkliftType(e.target.value)} required />
+                    <select
+                        className="input"
+                        value={forkliftType}
+                        onChange={e => setForkliftType(e.target.value)}
+                        required
+                    >
+                        <option value="">— Selecciona tipo —</option>
+                        {FORKLIFT_TYPES.map(t => (
+                            <option key={t} value={t}>{t}</option>
+                        ))}
+                    </select>
                 </label>
+
                 <label className="block">
                     <span>Ubicación</span>
-                    <input className="input" value={ubication} onChange={e => setUbication(e.target.value)} required />
+                    <select
+                        className="input"
+                        value={ubication}
+                        onChange={e => setUbication(e.target.value)}
+                        required
+                    >
+                        <option value="">— Selecciona ubicación —</option>
+                        {UBICATIONS.map(u => (
+                            <option key={u} value={u}>{u}</option>
+                        ))}
+                    </select>
                 </label>
-                <label className="block">
+                <label>
                     <span>Imagen</span>
                     <input type="file" accept="image/*" onChange={e => setFkImage(e.target.files?.[0] ?? null)} />
                 </label>
@@ -181,7 +211,7 @@ export default function ForkliftForm() {
                 )}
             </fieldset>
 
-            <button className="btn" disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</button>
+            <button className={style.save} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</button>
         </form>
     )
 }

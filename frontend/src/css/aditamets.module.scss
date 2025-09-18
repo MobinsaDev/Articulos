@@ -1,0 +1,167 @@
+.mainAditamets {
+
+    background-color: #fff;
+    min-height: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+
+    section {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    header {
+        display: flex;
+        gap: .75rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h1 {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        a {
+            display: inline-block;
+            padding: .5rem .75rem;
+            border-radius: .5rem;
+            border: 1px solid #e5e7eb;
+            text-decoration: none;
+            transition: transform .1s ease;
+        }
+
+        a:hover {
+            transform: translateY(-1px);
+        }
+    }
+
+    /* Envoltura para hacer la tabla scrolleable en móvil */
+    .tableWrap {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        /* sombra sutil que indica que hay scroll */
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .03);
+        border-radius: .5rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+    }
+
+    thead th {
+        text-align: left;
+        font-weight: 600;
+        font-size: .9rem;
+        padding: .75rem;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    tbody td {
+        padding: .75rem;
+        border-bottom: 1px solid #f0f2f5;
+        vertical-align: middle;
+    }
+
+    tbody tr:hover {
+        background: #fafafa;
+    }
+
+    td img {
+        display: block;
+        width: 56px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: .25rem;
+    }
+
+    td a,
+    td button {
+        margin-right: .5rem;
+    }
+
+    /* Responsivo: compacta paddings y tipografía en pantallas chicas */
+    @media (max-width: 640px) {
+        header {
+            flex-direction: column;
+            align-items: stretch;
+
+            a {
+                text-align: center;
+            }
+        }
+
+        thead th,
+        tbody td {
+            padding: .6rem;
+            font-size: .875rem;
+        }
+    }
+}
+
+.new {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    justify-items: center;
+    text-align-last: center;
+
+    padding: 12px 16px;
+    min-width: 60px;
+    min-height: 30px;
+    border-radius: 12px;
+    border: 0;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+
+    &::before {
+        color: #fafafa;
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: #0E1A27;
+        transform: scaleX(0);
+        transform-origin: center;
+        opacity: 0;
+        transition: transform .35s ease, opacity .35s ease;
+        z-index: 0;
+    }
+
+    span {
+        position: relative;
+        z-index: 1;
+        color: #fafafa;
+
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+
+        &:hover::before,
+        &:focus-visible::before {
+            transform: scaleX(1);
+            opacity: 1;
+            color: #fafafa;
+
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        color: #fafafa;
+
+    }
+
+}

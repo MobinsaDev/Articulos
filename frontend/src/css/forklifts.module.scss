@@ -1,5 +1,5 @@
-.mainChargers {
-
+/* forklifts.module.scss */
+.mainForklift {
     background-color: #fff;
     min-height: 100%;
     padding: 1rem;
@@ -106,12 +106,9 @@
 }
 
 .new {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    justify-items: center;
+
     text-align-last: center;
+    justify-items: center;
 
     padding: 12px 16px;
     min-width: 60px;
@@ -165,7 +162,8 @@
     }
 
 }
-.formCharger {
+
+.formForklift {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;

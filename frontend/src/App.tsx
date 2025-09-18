@@ -14,6 +14,10 @@ import ForkliftEdit from "./pages/forklifts/ForkliftEdit";
 import ChargerList from "./pages/chargers/ChargerList";
 import ChargerForm from "./pages/chargers/ChargerForm";
 import ChargerEdit from "./pages/chargers/ChargerEdit";
+import AditamentsList from "./pages/aditaments/AditametsList";
+import UserForm from "./pages/users/UsersForm";
+import UsersList from "./pages/users/UsersList";
+import UsersEdit from "./pages/users/UsersEdit";
 
 import Welcome from "./pages/Welcome";
 
@@ -45,8 +49,24 @@ export default function App() {
             <Route path="chargers" element={<ChargerList />} />
             <Route path="chargers/new" element={<ChargerForm />} />
             <Route path="chargers/:id" element={<ChargerEdit />} />
+            <Route path="aditamets" element={<AditamentsList />} />
 
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/users" element={
+              <ProtectedRoute roles={['admin']}>
+                <UsersList />
+              </ProtectedRoute>
+            } />
+            <Route path="/users/new" element={
+              <ProtectedRoute roles={['admin']}>
+                <UserForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/users/:id" element={
+              <ProtectedRoute roles={['admin']}>
+                <UsersEdit />
+              </ProtectedRoute>
+            } />
+
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

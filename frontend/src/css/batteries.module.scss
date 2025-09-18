@@ -1,3 +1,348 @@
-.mainBatteries{
+.mainBatteries {
+
+    background-color: #fff;
+    min-height: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+
+    section {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    header {
+        display: flex;
+        gap: .75rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h1 {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        a {
+            display: inline-block;
+            padding: .5rem .75rem;
+            border-radius: .5rem;
+            border: 1px solid #e5e7eb;
+            text-decoration: none;
+            transition: transform .1s ease;
+        }
+
+        a:hover {
+            transform: translateY(-1px);
+        }
+    }
+
+    /* Envoltura para hacer la tabla scrolleable en móvil */
+    .tableWrap {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        /* sombra sutil que indica que hay scroll */
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .03);
+        border-radius: .5rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+    }
+
+    thead th {
+        text-align: left;
+        font-weight: 600;
+        font-size: .9rem;
+        padding: .75rem;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    tbody td {
+        padding: .75rem;
+        border-bottom: 1px solid #f0f2f5;
+        vertical-align: middle;
+    }
+
+    tbody tr:hover {
+        background: #fafafa;
+    }
+
+    td img {
+        display: block;
+        width: 56px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: .25rem;
+    }
+
+    td a,
+    td button {
+        margin-right: .5rem;
+    }
+
+    /* Responsivo: compacta paddings y tipografía en pantallas chicas */
+    @media (max-width: 640px) {
+        header {
+            flex-direction: column;
+            align-items: stretch;
+
+            a {
+                text-align: center;
+            }
+        }
+
+        thead th,
+        tbody td {
+            padding: .6rem;
+            font-size: .875rem;
+        }
+    }
     
+}
+
+.new {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    justify-items: center;
+    text-align-last: center;
+
+    padding: 12px 16px;
+    min-width: 60px;
+    min-height: 30px;
+    border-radius: 12px;
+    border: 0;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+
+    &::before {
+        color: #fafafa;
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: #0E1A27;
+        transform: scaleX(0);
+        transform-origin: center;
+        opacity: 0;
+        transition: transform .35s ease, opacity .35s ease;
+        z-index: 0;
+    }
+
+    span {
+        position: relative;
+        z-index: 1;
+        color: #fafafa;
+
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+
+        &:hover::before,
+        &:focus-visible::before {
+            transform: scaleX(1);
+            opacity: 1;
+            color: #fafafa;
+
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        color: #fafafa;
+
+    }
+
+}
+
+.formBattery {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: clamp(16px, 3vw, 24px);
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    gap: 20px;
+
+    h2 {
+        margin: 0 0 8px;
+        font-size: clamp(1rem, 2.2vw, 1.25rem);
+        font-weight: 700;
+        color: #111827;
+    }
+
+    /* Bloques */
+    fieldset {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: clamp(12px, 2.2vw, 16px);
+    }
+
+    legend {
+        padding: 0 6px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    /* Etiquetas + controles */
+    label {
+        display: block;
+        margin-bottom: 12px;
+
+        >span {
+            display: inline-block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #111827;
+        }
+    }
+
+    /* Inputs base */
+    input:not([type="checkbox"]),
+    select {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        color: #111827;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+            background: #fff;
+        }
+
+        &::placeholder {
+            color: #9ca3af;
+        }
+
+        &:disabled {
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+    }
+
+    /* File input: separa un poco del resto */
+    input[type="file"] {
+        border: 1px solid #0E1A27;
+        padding: 8px 0;
+        border: none;
+    }
+
+    /* Select con flecha embebida */
+    select {
+        appearance: none;
+        background-image:
+            url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7l5 5 5-5' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 18px 18px;
+        padding-right: 38px;
+    }
+
+    /* Imagen de vista previa (si aplica) */
+    img {
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+}
+
+.save {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    left: 20px;
+    padding: 12px 16px;
+    min-width: 60px;
+    min-height: 30px;
+    border-radius: 12px;
+    border: 0;
+    background: var(--accent, #111827);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+    transition: transform .08s ease, box-shadow .2s ease;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: #0E1A27;
+        transform: scaleX(0);
+        transform-origin: center;
+        opacity: 0;
+        transition: transform .35s ease, opacity .35s ease;
+        z-index: 0;
+    }
+
+    /* El texto del botón siempre visible */
+    &,
+    & span {
+        position: relative;
+        z-index: 1;
+        color: #fff;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+        }
+
+        &:hover::before,
+        &:focus-visible::before {
+            transform: scaleX(1);
+            opacity: 1;
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+/* ==== RESPONSIVE FINO ==== */
+@media (max-width: 640px) {
+    .formForklift {
+        gap: 16px;
+
+        input:not([type="checkbox"]),
+        select {
+            padding: 9px 12px;
+            font-size: 0.92rem;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getCharger, updateCharger } from '../../api/charger'
+import style from '../../css/chargers.module.scss'
 
 export default function ChargerEdit() {
   const { id } = useParams<{ id: string }>()
@@ -42,22 +43,24 @@ export default function ChargerEdit() {
   if (loading) return <div>Cargando…</div>
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 max-w-md">
-      <h2 className="text-lg font-semibold">Editar cargador #{id}</h2>
-      {error && <div className="text-red-600">{error}</div>}
-      <label className="block">
+    <form onSubmit={onSubmit} className={style.formCharger}>
+      <h2 >Editar cargador #{id}</h2>
+      {error && <div>{error}</div>}
+      <label>
         <span>Modelo</span>
-        <input className="input" value={model} onChange={e=>setModel(e.target.value)} required/>
+        <input value={model} onChange={e => setModel(e.target.value)} required />
       </label>
-      <label className="block">
+      <label>
         <span>Serie</span>
-        <input className="input" value={serie} onChange={e=>setSerie(e.target.value)} required/>
+        <input value={serie} onChange={e => setSerie(e.target.value)} required />
       </label>
-      <label className="block">
+      <label>
         <span>Reemplazar imagen (opcional)</span>
-        <input type="file" accept="image/*" onChange={e=>setImageFile(e.target.files?.[0] ?? null)} />
+        <input type="file" accept="image/*" onChange={e => setImageFile(e.target.files?.[0] ?? null)} />
       </label>
-      <button className="btn" disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</button>
+      <button className={style.save} disabled={saving}>
+        <span>{saving ? 'Guardando…' : 'Guardar'}</span>
+      </button>
     </form>
   )
 }

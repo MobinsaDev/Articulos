@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getForklift, updateForklift } from '../../api/forklift'
 import { listBatteries, type Battery } from '../../api/batteries'
 import { listChargers, type Charger } from '../../api/charger'
+import style from '../../css/forklifts.module.scss'
 
 export default function ForkliftEdit() {
   const { id } = useParams<{ id: string }>()
@@ -28,6 +29,16 @@ export default function ForkliftEdit() {
   const [chargers, setChargers] = useState<Charger[]>([])
 
   const toImgUrl = (p?: string | null) => (p ? new URL(p, window.location.origin).href : '')
+
+  const FORKLIFT_TYPES = ["combustión", "eléctrico"] as const;
+
+  const UBICATIONS = [
+    "Mobinsa",
+    "Av. Industrias",
+    "Sucursal Norte",
+    "Sucursal Centro",
+    "Sucursal Sur"
+  ] as const;
 
   useEffect(() => {
     (async () => {
@@ -80,107 +91,128 @@ export default function ForkliftEdit() {
   if (loading) return <div>Cargando…</div>
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6 max-w-3xl">
-      <h2 className="text-xl font-semibold">Editar Montacargas #{id}</h2>
-      {error && <div className="text-red-600">{error}</div>}
+    <div>
+      <form onSubmit={onSubmit} className={style.formForklift}>
+        <h2>Editar Montacargas #{id}</h2>
+        {error && <div>{error}</div>}
 
-      <fieldset className="border p-4 rounded">
-        <legend className="font-bold">Datos del montacargas</legend>
+        <fieldset>
+          <legend>Datos del montacargas</legend>
 
-        <label className="block">
-          <span>Serie</span>
-          <input className="input" value={serie} onChange={e => setSerie(e.target.value)} required />
-        </label>
+          <label>
+            <span>Serie</span>
+            <input value={serie} onChange={e => setSerie(e.target.value)} required />
+          </label>
 
-        <label className="block">
-          <span>Modelo</span>
-          <input className="input" value={model} onChange={e => setModel(e.target.value)} required />
-        </label>
+          <label>
+            <span>Modelo</span>
+            <input value={model} onChange={e => setModel(e.target.value)} required />
+          </label>
 
-        <label className="block">
-          <span>Tipo</span>
-          <input className="input" value={forkliftType} onChange={e => setForkliftType(e.target.value)} required />
-        </label>
-
-        <label className="block">
-          <span>Ubicación</span>
-          <input className="input" value={ubication} onChange={e => setUbication(e.target.value)} required />
-        </label>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="block">
-            <span>Batería</span>
+            <span>Tipo</span>
             <select
-              className="input"
-              value={batteryId}
-              onChange={e => setBatteryId(Number(e.target.value))}
+              value={forkliftType}
+              onChange={e => setForkliftType(e.target.value)}
               required
             >
-              <option value="">— Selecciona —</option>
-              {batteries.map(b => (
-                <option key={b.id} value={b.id}>
-                  {b.id} • {b.model} • {b.serie}
-                </option>
+              <option value="">— Selecciona tipo —</option>
+              {FORKLIFT_TYPES.map(t => (
+                <option key={t} value={t}>{t}</option>
               ))}
             </select>
           </label>
 
           <label className="block">
-            <span>Cargador</span>
+            <span>Ubicación</span>
             <select
-              className="input"
-              value={chargerId}
-              onChange={e => setChargerId(Number(e.target.value))}
+              value={ubication}
+              onChange={e => setUbication(e.target.value)}
               required
             >
-              <option value="">— Selecciona —</option>
-              {chargers.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.id} • {c.model} • {c.serie}
-                </option>
+              <option value="">— Selecciona ubicación —</option>
+              {UBICATIONS.map(u => (
+                <option key={u} value={u}>{u}</option>
               ))}
             </select>
           </label>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-          <div>
-            <span className="block mb-1">Imagen actual</span>
-            {currentImageUrl ? (
-              <img
-                src={toImgUrl(currentImageUrl)}
-                alt="Imagen actual"
-                style={{ width: 160, height: 120, objectFit: 'cover' }}
-              />
-            ) : (
-              <div className="text-sm text-gray-500">— Sin imagen —</div>
-            )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="block">
+              <span>Batería</span>
+              <select
+                value={batteryId}
+                onChange={e => setBatteryId(Number(e.target.value))}
+                required
+              >
+                <option value="">— Selecciona —</option>
+                {batteries.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.id} • {b.model} • {b.serie}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span>Cargador</span>
+              <select
+                value={chargerId}
+                onChange={e => setChargerId(Number(e.target.value))}
+                required
+              >
+                <option value="">— Selecciona —</option>
+                {chargers.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.id} • {c.model} • {c.serie}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
-          <label className="block">
-            <span>Reemplazar imagen (opcional)</span>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={e => setFkImage(e.target.files?.[0] ?? null)}
-            />
-          </label>
-        </div>
-      </fieldset>
+          <div>
+            <div>
+              <span>Imagen actual</span>
+              {currentImageUrl ? (
+                <img
+                  src={toImgUrl(currentImageUrl)}
+                  alt="Imagen actual"
+                  style={{ width: 160, height: 120, objectFit: 'cover' }}
+                />
+              ) : (
+                <div>— Sin imagen —</div>
+              )}
+            </div>
 
-      <div className="flex gap-2">
-        <button className="btn" disabled={saving}>
-          {saving ? 'Guardando…' : 'Guardar'}
-        </button>
-        <button
-          type="button"
-          className="btn border"
-          onClick={() => nav('/forklifts')}
-          disabled={saving}
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
+            <label>
+              <span>Reemplazar imagen (opcional)</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => setFkImage(e.target.files?.[0] ?? null)}
+              />
+            </label>
+          </div>
+        </fieldset>
+
+        <div className={style.actions}>
+          <button
+            className={style.save}
+            disabled={saving}>
+            {saving ? 'Guardando…' : 'Guardar'}
+          </button>
+          <button
+            className={style.save}
+            type="button"
+            onClick={() => nav('/forklifts')}
+            disabled={saving}
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }
